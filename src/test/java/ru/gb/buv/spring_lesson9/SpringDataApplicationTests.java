@@ -1,4 +1,4 @@
-package ru.gb.buv.spring_lesson8;
+package ru.gb.buv.spring_lesson9;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
