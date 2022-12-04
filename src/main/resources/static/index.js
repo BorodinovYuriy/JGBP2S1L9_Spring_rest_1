@@ -1,44 +1,60 @@
 angular.module('app',[]).controller('indexController', function($scope, $http){
-    const contextPath = 'http://localhost:8080/app';
-    $scope.offsetPage = 0;
+    const contextPath = 'http://localhost:8080/myapp/api/v1';
+    $scope.pageNumber = 1;
 
-/*запрос списка продуктов НАЧАЛЬНЫЙ*/
-    $scope.fillTable = function() {
-        $http.get(contextPath)
-            .then(function(response) {
-            $scope.ProductList = response.data;
-            });
-    }
-/*запрос списка СТРАНИЦЫ*/
-        $scope.change_page = function(pageVar, limit) {
-        //Без проверок и алертов, главное - работает:)))
-            $scope.offsetPage = $scope.offsetPage + pageVar;
+$scope.fillTable = function() {
                 $http({
-                    url: contextPath +'/change_page',
+                    url: contextPath +'/products',
                     method: 'GET',
                     params: {
-                        offset: $scope.offsetPage,
-                        limit: limit
+                                p: $scope.pageNumber,
+                                min_cost: $scope.filter ? $scope.filter.min_cost : null,
+                                max_cost: $scope.filter ? $scope.filter.max_cost : null,
+                                title_part: $scope.filter ? $scope.filter.title_part : null
                     }
                 }).then(function(response) {
-                                  $scope.ProductList = response.data;
+                                  $scope.ProductList = response.data.content;
                               });
-                      }
-//------------------------------------------
+                      };
+
+
+            $scope.change_page = function(pageVar) {
+                 $scope.pageNumber = $scope.pageNumber + pageVar;
+                    if($scope.pageNumber <= 0){
+                    $scope.pageNumber = 1
+                    }
+                    $http({
+                        url: contextPath +'/products',
+                        method: 'GET',
+                        params: {
+                                p: $scope.pageNumber,
+                                min_cost: $scope.filter ? $scope.filter.min_cost : null,
+                                max_cost: $scope.filter ? $scope.filter.max_cost : null,
+                                title_part: $scope.filter ? $scope.filter.title_part : null
+                        }
+                    }).then(function(response) {
+                                  $scope.ProductList = response.data.content;
+                              });
+            };
+
 /*удаление продукта*/
-    $scope.deleteProductById = function(productId){
-            $http.post(contextPath + '/delete', productId)
+    $scope.deleteProductById = function(id){
+            $http.delete(contextPath + '/products/' + id)
             .then(function(response) {
-                $scope.fillTable();
+                location.reload();
             });
-    }
+    };
 /*добавление продукта*/
     $scope.submitCreateNewProduct = function(){
     /*alert("Отправка!"+ $scope.newProduct);*/
-                $http.post(contextPath + '/add', $scope.newProduct)
+                $http.post(contextPath + '/products', $scope.newProduct)
                     .then(function(response) {
-                    $scope.fillTable();
+                     location.reload();
                 });
-        }
+        };
+
     $scope.fillTable();
+
 });
+/*
+приходится делать location.reload(); так ка $scope.fillTable(); работает только в fillTable();*/

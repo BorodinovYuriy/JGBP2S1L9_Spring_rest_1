@@ -1,5 +1,5 @@
 
-package ru.gb.buv.spring_lesson8;
+package ru.gb.buv.spring_lesson9;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
